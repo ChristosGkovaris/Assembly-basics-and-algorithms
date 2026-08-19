@@ -1,96 +1,248 @@
 # ASSEMBLY BASICS AND ALGORITHMS
 
-This repository contains a **collection of introductory RISC-V Assembly programs**, designed to demonstrate core low-level computing concepts such as recursion, memory access, pointer manipulation, and basic array/string operations.  
-It was developed as part of the **Computer Architecture** coursework at the **University of Ioannina**.
+This project contains a collection of **RISC-V Assembly programs** implementing recursive computation, linear search, and null-terminated string copying using both index-based and pointer-based memory traversal. It was developed as part of the **MYY505 - Computer Architecture** coursework at the **University of Ioannina**.
 
 ---
 
 ## TABLE OF CONTENTS
-1. [Overview](#overview)  
-2. [Features](#features)  
-3. [Included Programs](#included-programs)  
-4. [Implementation Details](#implementation-details)  
-5. [License](#license)  
-6. [Contact](#contact)
+
+1. [Overview](#overview)
+2. [Tech Stack](#tech-stack)
+3. [Features](#features)
+4. [Architecture](#architecture)
+5. [Project Structure](#project-structure)
+6. [Input Data](#input-data)
+7. [Algorithms Implemented](#algorithms-implemented)
+8. [Usage](#usage)
+9. [Contributors](#contributors)
+10. [License](#license)
+11. [Contact](#contact)
 
 ---
 
 ## OVERVIEW
 
-This repository contains **five standalone RISC-V assembly programs** that illustrate fundamental architecture-level mechanisms:
+The repository contains five standalone assembly programs focused on fundamental low-level programming concepts:
 
-- **Recursive computation**  
-- **Linear search**, both with pointer arithmetic and with direct indexing  
-- **String copy**, implemented in two different versions using array indexing and pointer traversal  
+- Recursive factorial computation
+- Linear search using array indexing
+- Linear search using pointer traversal
+- Null-terminated string copying using indexed memory access
+- Null-terminated string copying using pointer traversal
 
-Each program was developed to strengthen understanding of:
+The implementations demonstrate register usage, memory addressing, stack management, function calls, conditional branching, and direct manipulation of arrays and strings.
 
-- Register usage conventions  
-- Memory addressing modes  
-- Function call mechanics (stack frames, saving/restoring registers)  
-- Control flow using branches and jumps  
+---
+
+## TECH STACK
+
+- **Language:** RISC-V Assembly
+- **Data Representation:** 32-bit words, byte-addressable strings
+- **Core Operations:** Register arithmetic, memory load/store, branching, jumps, stack operations
+- **System Interface:** Environment calls (`ecall`)
 
 ---
 
 ## FEATURES
 
-- Clear, minimal RISC-V assembly programs  
-- Demonstration of recursion using stack-based activation records  
-- Examples of memory load/store instructions  
-- Pointer vs. index-based traversal techniques  
-- Modular structure with well-commented code  
-- Suitable for beginners learning ISA fundamentals
+- **Recursive Function Execution**
+  - Recursive factorial calculation
+  - Stack allocation for function state
+  - Return address preservation and restoration
+
+- **Array Traversal**
+  - Index-based address calculation
+  - Pointer-based sequential traversal
+  - Element comparison and search-result indexing
+
+- **String Manipulation**
+  - Byte-level load and store operations
+  - Null-terminated string detection
+  - Index-based and pointer-based copying approaches
+
+- **Control Flow**
+  - Conditional branches
+  - Explicit loops
+  - Function calls and returns
+  - Program termination through environment calls
 
 ---
 
-## INCLUDED PROGRAMS
+## ARCHITECTURE
 
-### **1. factorial.s**
-- Implements recursive factorial calculation  
-- Demonstrates stack usage, jal/jr control flow, and base–recursive case structure
+The project consists of independent RISC-V Assembly programs rather than a shared application architecture. Each source file contains the data definitions and control flow required for a specific low-level programming task.
 
-### **2. search_no_pointers.s**
-- Performs linear search using array indexing  
-- Shows address calculation and sequential element checking
+The implementations primarily use:
 
-### **3. search_with_pointers.s**
-- Implements the same search algorithm but using pointer increments  
-- Highlights differences between pointer-style and index-style memory traversal
-
-### **4. strcpy_v1.s**
-- Copies a null-terminated string using direct index access  
-- Demonstrates byte loads/stores and termination conditions
-
-### **5. strcpy_v2.s**
-- Pointer-based implementation of string copy  
-- Uses pointer increments for more optimized traversal
+- **Argument registers (`a0`–`a2`)** for addresses, values, and function arguments
+- **Temporary registers (`t0`–`t2`)** for intermediate calculations and loaded data
+- **Saved register (`s0`)** for traversal indexes
+- **Stack pointer (`sp`)** for recursive function state
+- **Return address register (`ra`)** for recursive function calls
+- **Branch and jump instructions** for loops, conditions, calls, and returns
 
 ---
 
-## IMPLEMENTATION DETAILS
+## PROJECT STRUCTURE
 
-- **Instruction set:** RISC-V RV32I  
-- **Memory operations:** `lb`, `sb`, `lw`, `sw` for accessing data  
-- **Control flow:** `beq`, `bne`, `j`, `jal`, `jr`  
-- **Recursion:** Stack-allocated frames with saved return addresses  
-- **Strings & arrays:** Null-terminated traversal and sequential memory scanning  
-- **Pointer arithmetic:** Incremental updates on base addresses for efficient iteration  
+```text
+.
+├── factorial.s
+├── search_no_pointers.s
+├── search_with_pointers.s
+├── strcpy_v1.s
+└── strcpy_v2.s
+```
 
-All programs are fully commented to help understand the logic and register usage.
+- `factorial.s` — Recursive factorial implementation using stack-based function calls
+- `search_no_pointers.s` — Linear search using index-based address calculation
+- `search_with_pointers.s` — Linear search using direct pointer traversal
+- `strcpy_v1.s` — Null-terminated string copy using indexed memory access
+- `strcpy_v2.s` — Null-terminated string copy using pointer increments
+
+---
+
+## INPUT DATA
+
+The examples use statically defined input values within the assembly source files.
+
+### Factorial
+
+`factorial.s` initializes the factorial argument to:
+
+```text
+4
+```
+
+### Linear Search
+
+Both search implementations operate on:
+
+```text
+[10, 3, -10, 234, 22, 5]
+```
+
+with:
+
+```text
+Search value: 22
+Number of elements: 6
+```
+
+### String Copy
+
+Both string-copy implementations use:
+
+```text
+Source: "This is a 0 string!"
+Destination buffer: 100 bytes
+```
+
+---
+
+## ALGORITHMS IMPLEMENTED
+
+### Recursive Factorial
+
+`factorial.s` computes the factorial of an integer recursively.
+
+For each recursive call, the program:
+
+1. Allocates an 8-byte stack frame.
+2. Stores the return address and current argument.
+3. Checks the base condition.
+4. Decrements the argument and recursively calls the factorial function.
+5. Restores the previous argument and return address.
+6. Multiplies the current value by the recursive result.
+
+The recursive relationship is:
+
+```text
+factorial(n) = n × factorial(n - 1)
+```
+
+with the implemented base case returning `1` when the argument is less than `1`.
+
+### Linear Search — Index-Based
+
+`search_no_pointers.s` performs sequential linear search using an index.
+
+For each element, the address is calculated using:
+
+```text
+address = base_address + (index × 4)
+```
+
+The current 32-bit value is loaded and compared with the target. The index is incremented until the target is found or all elements have been examined.
+
+### Linear Search — Pointer-Based
+
+`search_with_pointers.s` implements the same sequential search while traversing memory directly.
+
+Instead of recalculating each element address from the base address and index, the array pointer advances by four bytes after each comparison:
+
+```text
+pointer = pointer + 4
+```
+
+An index is maintained separately to identify the position of a matching element.
+
+### String Copy — Index-Based
+
+`strcpy_v1.s` copies a null-terminated string byte by byte using an index to calculate source and destination addresses.
+
+The process continues until the copied byte is zero, representing the string terminator.
+
+### String Copy — Pointer-Based
+
+`strcpy_v2.s` performs the same byte-level copy using direct source and destination pointers.
+
+After each byte is copied, both pointers advance by one byte:
+
+```text
+source_pointer = source_pointer + 1
+destination_pointer = destination_pointer + 1
+```
+
+Traversal stops after the null terminator has been copied.
+
+---
+
+## USAGE
+
+Each `.s` file is a standalone assembly program and can be executed independently in a RISC-V environment that supports the instructions and environment calls used by the source code.
+
+Select the program to examine or execute:
+
+```text
+factorial.s
+search_no_pointers.s
+search_with_pointers.s
+strcpy_v1.s
+strcpy_v2.s
+```
+
+The example inputs are defined directly in the corresponding source files and can be modified before execution to test different values.
+
+---
+
+## CONTRIBUTORS
+
+- **Christos Gkovaris** — GitHub: [ChristosGkovaris](https://github.com/ChristosGkovaris)
 
 ---
 
 ## LICENSE
 
-This project was developed as part of the  
-**Computer Architecture** course at the University of Ioannina.
+No formal software license is included in the provided project files.
 
-Final implementation by the project creators.
+This project was developed as part of the **MYY505 - Computer Architecture** coursework at the **University of Ioannina**.
 
 ---
 
 ## CONTACT
 
 **Christos Gkovaris**  
-University of Ioannina – Computer Science and Engineering  
-GitHub: https://github.com/ChristosGkovaris
+Computer Science and Engineering  
+University of Ioannina  
+GitHub: [ChristosGkovaris](https://github.com/ChristosGkovaris)
