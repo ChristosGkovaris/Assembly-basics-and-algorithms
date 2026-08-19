@@ -245,4 +245,3 @@ This project was developed as part of the **MYY505 - Computer Architecture** cou
 **Christos Gkovaris**  
 Computer Science and Engineering  
 University of Ioannina  
-GitHub: [ChristosGkovaris](https://github.com/ChristosGkovaris)
